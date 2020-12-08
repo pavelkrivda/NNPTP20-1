@@ -20,12 +20,6 @@ namespace INPTPZ1Tests
         }
 
         [TestMethod()]
-        public void SolvePolynomialTest()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod()]
         public void ToStringTest()
         {
             Polynomial polynomial = new Polynomial();

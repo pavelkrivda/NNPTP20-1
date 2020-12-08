@@ -8,31 +8,30 @@ namespace INPTPZ1
     {
         public class PolynomialSolver
         {
-            private const double PRECISION = 0.5; 
-            private const byte ITERATIONS_COUNT = 30; 
-            private const double ACCURACY_OF_ROOT_COMPARISON = 0.01; 
+            private const double PRECISION = 0.5;
+            private const byte ITERATIONS_COUNT = 30;
+            private const double ACCURACY_OF_ROOT_COMPARISON = 0.01;
 
-            private int[] integerArguments;
             private double xMin, yMin, xStep, yStep;
             private int imageWidth, imageHeight;
             private List<ComplexNumber> roots;
             private string outputPath;
-            private Bitmap outputImages;
+            private FractalImage outputImage;
 
-            private static readonly Color[] colors = new Color[]
-            {
-                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange,
-                Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
-            };
 
             public void Initialization(string[] arguments)
             {
-                integerArguments = ParseIntegerArguments(arguments);
-                double[] doubleArguments = ParseDoubleArguments(arguments);
+                if (arguments.Length != 7)
+                {
+                    throw new ArgumentException("Musí být zadáno 7 vstupních parametrů!");
+                }
+
+                var parseArguemnts = ParseInputArguemnts(arguments);
+                var integerArguments = parseArguemnts.Item1;
+                var doubleArguments = parseArguemnts.Item2;
 
                 imageWidth = integerArguments[0];
                 imageHeight = integerArguments[1];
-
                 xMin = doubleArguments[0];
                 double xMax = doubleArguments[1];
                 yMin = doubleArguments[2];
@@ -43,45 +42,47 @@ namespace INPTPZ1
 
                 outputPath = arguments[6];
 
-                outputImages = new Bitmap(imageWidth, imageHeight);
+                outputImage = new FractalImage(imageWidth, imageHeight);
                 roots = new List<ComplexNumber>();
             }
 
-            private int[] ParseIntegerArguments(string[] args)
+            private static Tuple<int[], double[]> ParseInputArguemnts(string[] arguments)
             {
-                int[] integerArguments = new int[2];
+                var integerArguments = new int[2];
                 for (int i = 0; i < integerArguments.Length; i++)
                 {
-                    integerArguments[i] = int.Parse(args[i]);
+                    if (!int.TryParse(arguments[i], out integerArguments[i]))
+                    {
+                        throw new ArgumentException("Neplatné vstupní argumenty!");
+                    }
                 }
 
-                return integerArguments;
-            }
-
-            private double[] ParseDoubleArguments(string[] args)
-            {
-                double[] doubleArguments = new double[4];
+                var doubleArguments = new double[4];
                 for (int i = 0; i < doubleArguments.Length; i++)
                 {
-                    doubleArguments[i] = double.Parse(args[i + 2]);
+                    if (!double.TryParse(arguments[i + 2], out doubleArguments[i]))
+                    {
+                        throw new ArgumentException("Neplatné vstupní argumenty!");
+                    }
                 }
 
-                return doubleArguments;
+                return new Tuple<int[], double[]>(integerArguments, doubleArguments);
             }
 
             public Polynomial CreatePolynomial()
             {
                 Polynomial polynomial = new Polynomial();
-                polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
+                polynomial.Coefficients.Add(new ComplexNumber() {Re = 1});
                 polynomial.Coefficients.Add(ComplexNumber.Zero);
                 polynomial.Coefficients.Add(ComplexNumber.Zero);
-                polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
+                polynomial.Coefficients.Add(new ComplexNumber() {Re = 1});
 
                 return polynomial;
             }
 
             public void EvaluatePolynomial(Polynomial polynomial, Polynomial derivationPolynomial)
             {
+                int rootIdentifier;
                 for (int i = 0; i < imageWidth; i++)
                 {
                     for (int j = 0; j < imageHeight; j++)
@@ -97,8 +98,8 @@ namespace INPTPZ1
 
                         for (int k = 0; k < ITERATIONS_COUNT; k++)
                         {
-                            var diff = polynomial.SolvePolynomial(currentPoint).
-                                Divide(derivationPolynomial.SolvePolynomial(currentPoint));
+                            var diff = polynomial.SolvePolynomial(currentPoint)
+                                .Divide(derivationPolynomial.SolvePolynomial(currentPoint));
 
                             currentPoint = currentPoint.Subtract(diff);
 
@@ -108,12 +109,12 @@ namespace INPTPZ1
                             }
                         }
 
-                        int rootIdentifier = FindRoots(roots, currentPoint);
-                        SetPixelsColors(j, i, rootIdentifier);
+                        rootIdentifier = FindRoots(roots, currentPoint);
+                        outputImage.SetPixelsColors(j, i, rootIdentifier);
                     }
                 }
 
-                SaveImage();
+                outputImage.SaveImage(outputPath);
             }
 
             private bool IsAchievedAccuracy(ComplexNumber diff)
@@ -127,7 +128,7 @@ namespace INPTPZ1
                 var rootIdentifier = 0;
                 for (int i = 0; i < roots.Count; i++)
                 {
-                    if (IsKnowTheFoundRoot(roots[i], currentPoint))
+                    if (RootEquals(roots[i], currentPoint))
                     {
                         known = true;
                         rootIdentifier = i;
@@ -143,20 +144,10 @@ namespace INPTPZ1
                 return rootIdentifier;
             }
 
-            private bool IsKnowTheFoundRoot(ComplexNumber root, ComplexNumber currentPoint)
+            private bool RootEquals(ComplexNumber root, ComplexNumber currentPoint)
             {
-                return Math.Pow(currentPoint.Re - root.Re, 2) + Math.Pow(currentPoint.Im - root.Im, 2) <= ACCURACY_OF_ROOT_COMPARISON;
-            }
-
-            private void SetPixelsColors(int x, int y, int rootIdentifier)
-            {
-                Color pixelColor = colors[rootIdentifier % colors.Length];
-                outputImages.SetPixel(x, y, pixelColor);
-            }
-
-            private void SaveImage()
-            {
-                outputImages.Save(outputPath ?? "../../../out.png");
+                return Math.Pow(currentPoint.Re - root.Re, 2) + Math.Pow(currentPoint.Im - root.Im, 2) <=
+                       ACCURACY_OF_ROOT_COMPARISON;
             }
         }
     }

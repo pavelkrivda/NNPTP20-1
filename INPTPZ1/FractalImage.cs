@@ -4,12 +4,12 @@ namespace INPTPZ1
 {
     namespace Mathematics
     {
-        public class Image
+        public class FractalImage
         {
-            private Bitmap image;
+            private Bitmap fractalImage;
             private const string DEFAULT_IMAGE_PATH = "../../../out.png";
 
-            private static readonly Color[] colors = new Color[]
+            private static readonly Color[] colors =
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange,
                 Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
@@ -19,23 +19,23 @@ namespace INPTPZ1
             public int Height { get; }
 
 
-            public Image(int width, int height)
+            public FractalImage(int width, int height)
             {
                 Width = width;
                 Height = height;
 
-                image = new Bitmap(width, height);
+                fractalImage = new Bitmap(width, height);
             }
 
             public void SetPixelsColors(int x, int y, int rootIdentifier)
             {
                 Color pixelColor = colors[rootIdentifier % colors.Length];
-                image.SetPixel(x, y, pixelColor);
+                fractalImage.SetPixel(x, y, pixelColor);
             }
 
             public void SaveImage(string path)
             {
-                image.Save(path ?? DEFAULT_IMAGE_PATH);
+                fractalImage.Save(path ?? DEFAULT_IMAGE_PATH);
             }
         }
     }

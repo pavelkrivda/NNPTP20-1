@@ -17,9 +17,6 @@ namespace INPTPZ1
             Polynomial polynomial = polynomialSolver.CreatePolynomial();
             Polynomial polynomialDerivation = polynomial.Derive();
 
-            Console.WriteLine(polynomial);
-            Console.WriteLine(polynomialDerivation);
-
             polynomialSolver.EvaluatePolynomial(polynomial, polynomialDerivation);
         }
     }

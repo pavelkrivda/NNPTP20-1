@@ -16,7 +16,7 @@ namespace INPTPZ1
                 for (int i = 1; i < Coefficients.Count; i++)
                 {
                     polynomial.Coefficients.Add(
-                        Coefficients[i].Multiply(new ComplexNumber() { Re = i }));
+                        Coefficients[i].Multiply(new ComplexNumber() {Re = i}));
                 }
 
                 return polynomial;
@@ -58,9 +58,10 @@ namespace INPTPZ1
                             result += "x";
                         }
                     }
-                    
+
                     result += i == Coefficients.Count - 1 ? "" : " + ";
                 }
+
                 return result;
             }
         }

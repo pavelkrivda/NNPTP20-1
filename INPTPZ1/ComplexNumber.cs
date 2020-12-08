@@ -9,12 +9,16 @@ namespace INPTPZ1
             public double Re { get; set; }
             public double Im { get; set; }
 
+            private const double RootToleration = 0.01;
+            private const int Exponent = 2;
+
             public override bool Equals(object obj)
             {
                 if (obj is ComplexNumber)
                 {
                     ComplexNumber complexNumber = obj as ComplexNumber;
-                    return complexNumber.Re == Re && complexNumber.Im == Im;
+                    return Math.Pow(Re - complexNumber.Re, Exponent) +
+                        Math.Pow(Im - complexNumber.Im, Exponent) <= RootToleration;
                 }
                 return base.Equals(obj);
             }
@@ -24,16 +28,6 @@ namespace INPTPZ1
                 Re = 0,
                 Im = 0
             };
-
-            public double GetAbs()
-            {
-                return Math.Sqrt(Re * Re + Im * Im);
-            }
-
-            public double GetAngleInDegrees()
-            {
-                return Math.Atan(Im / Re);
-            }
 
             public ComplexNumber Add(ComplexNumber second)
             {
@@ -78,7 +72,7 @@ namespace INPTPZ1
                     Im = numerator.Im / denominator
                 };
             }
-
+            
             public override string ToString()
             {
                 return $"({Re} + {Im}i)";

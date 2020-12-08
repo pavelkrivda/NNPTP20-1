@@ -44,25 +44,7 @@ namespace INPTPZ1.Mathematics.Tests
 
             Assert.IsFalse(actual);
         }
-
-        [TestMethod()]
-        public void GetAbsTest()
-        {
-            double actual = secondComplexNumber.GetAbs();
-            double shouldBe = 2.23606797749979;
-
-            Assert.AreEqual(shouldBe, actual);
-        }
-
-        [TestMethod()]
-        public void GetAngleInDegreesTest()
-        {
-            double actual = secondComplexNumber.GetAngleInDegrees();
-            double shouldBe = -1.1071487177940904;
-
-            Assert.AreEqual(shouldBe, actual);
-        }
-
+       
         [TestMethod()]
         public void AddTest()
         {
